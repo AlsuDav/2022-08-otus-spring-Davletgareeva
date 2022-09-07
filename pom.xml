@@ -10,4 +10,8 @@
 
     <packaging>pom</packaging>
 
+   <modules>
+       <module>hw1-student-testing</module>
+   </modules>
+
 </project>
