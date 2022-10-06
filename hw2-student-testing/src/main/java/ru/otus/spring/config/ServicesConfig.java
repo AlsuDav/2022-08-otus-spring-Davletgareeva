@@ -4,7 +4,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import ru.otus.spring.dao.FAQDao;
-import ru.otus.spring.parser.OpenCsvParser;
 import ru.otus.spring.parser.Parser;
 import ru.otus.spring.service.ExamService;
 import ru.otus.spring.service.ExamServiceImpl;
@@ -13,13 +12,9 @@ import ru.otus.spring.service.ExamServiceImpl;
 @Configuration
 public class ServicesConfig {
     @Bean
-    public ExamService examService(FAQDao dao) {
-        return new ExamServiceImpl(dao);
+    public ExamService examService(FAQDao dao, Parser parser) {
+        return new ExamServiceImpl(dao, parser);
     }
 
-    @Bean
-    public Parser parser() {
-        return new OpenCsvParser();
-    }
 }
 

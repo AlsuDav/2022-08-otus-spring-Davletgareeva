@@ -1,7 +1,6 @@
 package ru.otus.spring.service;
 
 import com.opencsv.exceptions.CsvException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,11 +32,6 @@ class ExamServiceImplTest {
     @Mock
     private FAQDao faqDao;
 
-    @BeforeEach
-    void setUp() {
-
-    }
-
     @Test
     void startExamWithWrongType() throws URISyntaxException, IOException, CsvException {
         var faq = new FAQ();
@@ -48,7 +42,7 @@ class ExamServiceImplTest {
         InputStream inN = new ByteArrayInputStream(inputName.getBytes());
         System.setIn(inN);
 
-        var result = examServiceImpl.startExam(parser);
+        var result = examServiceImpl.startExam();
 
         assertEquals(false, result);
     }
@@ -66,7 +60,7 @@ class ExamServiceImplTest {
         String inputName = "name \n 11 \n A \n A \n";
         InputStream inN = new ByteArrayInputStream(inputName.getBytes());
         System.setIn(inN);
-        var result = examServiceImpl.startExam(parser);
+        var result = examServiceImpl.startExam();
         assertEquals(true, result);
     }
 }

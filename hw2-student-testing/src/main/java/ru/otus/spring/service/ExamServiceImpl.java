@@ -1,29 +1,29 @@
 package ru.otus.spring.service;
 
-import com.opencsv.exceptions.CsvException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.otus.spring.dao.FAQDao;
 import ru.otus.spring.domain.FAQ;
 import ru.otus.spring.domain.User;
+import ru.otus.spring.exceptions.ParseFileException;
 import ru.otus.spring.exceptions.QuestionTypeNotFound;
 import ru.otus.spring.parser.Parser;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Scanner;
 
 public class ExamServiceImpl implements ExamService {
     private final FAQDao faqDao;
-    private final static String NAME_AND_SURNAME = "Введите свое имя и фамилию:";
-    private final static String GROUP_NUMBER = "Введите свой номер группы:";
+    private Parser parser;
+    private static final String NAME_AND_SURNAME = "Введите свое имя и фамилию:";
+    private static final String GROUP_NUMBER = "Введите свой номер группы:";
     private static Logger log = LoggerFactory.getLogger(ExamServiceImpl.class);
-    public ExamServiceImpl(FAQDao faqDao) {
+    public ExamServiceImpl(FAQDao faqDao, Parser parser) {
         this.faqDao = faqDao;
+        this.parser = parser;
     }
     @Override
-    public boolean startExam(Parser parser) throws URISyntaxException {
+    public boolean startExam(){
         var flag = true;
         try {
             List<FAQ> questions = parser.getFAQFromFile(FAQ.class);
@@ -43,7 +43,7 @@ public class ExamServiceImpl implements ExamService {
             scanner.close();
             var user = User.builder().fio(fio).groupNumber(group).score(countRightAnswers).build();
             printResults(user, questions.size());
-        } catch (IOException | CsvException | QuestionTypeNotFound e) {
+        } catch (ParseFileException | QuestionTypeNotFound e) {
             flag = false;
             log.error("Failed to start Exam, exception:", e);
         }
