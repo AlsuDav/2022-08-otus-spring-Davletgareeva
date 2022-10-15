@@ -12,6 +12,7 @@
 
    <modules>
        <module>hw1-student-testing</module>
+       <module>hw2-student-testing</module>
    </modules>
 
 </project>
