@@ -33,7 +33,7 @@ public class OpenCsvParser implements Parser {
 
     }
 
-    public File getFileFromResource(String fileName) {
+    private File getFileFromResource(String fileName) {
         try {
             ClassLoader classLoader = OpenCsvParser.class.getClassLoader();
             URL resource = classLoader.getResource(fileName);
