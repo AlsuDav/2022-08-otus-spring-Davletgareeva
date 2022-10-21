@@ -1,8 +1,8 @@
-package ru.otus.spring;
+package ru.otus.spring.hw1;
 
 import com.opencsv.exceptions.CsvException;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import ru.otus.spring.parser.OpenCsvParser;
+import ru.otus.spring.hw1.parser.OpenCsvParser;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
