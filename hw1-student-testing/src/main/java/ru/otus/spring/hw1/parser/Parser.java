@@ -1,4 +1,4 @@
-package ru.otus.spring.parser;
+package ru.otus.spring.hw1.parser;
 
 import com.opencsv.exceptions.CsvException;
 

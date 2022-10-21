@@ -1,4 +1,4 @@
-package ru.otus.spring.parser;
+package ru.otus.spring.hw1.parser;
 
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
@@ -7,7 +7,7 @@ import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvException;
 import lombok.Getter;
 import lombok.Setter;
-import ru.otus.spring.domain.FAQ;
+import ru.otus.spring.hw1.domain.FAQ;
 
 import java.io.File;
 import java.io.FileReader;
