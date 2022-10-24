@@ -1,38 +1,48 @@
 package ru.otus.spring.hw3.service;
 
-import com.opencsv.exceptions.CsvException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.MessageSource;
+import ru.otus.spring.hw3.config.AppProps;
 import ru.otus.spring.hw3.dao.FAQDao;
 import ru.otus.spring.hw3.domain.FAQ;
 import ru.otus.spring.hw3.parser.Parser;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Locale;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
 class ExamServiceImplTest {
     @InjectMocks
     private ExamServiceImpl examServiceImpl;
+    @Mock
+    private MessageSource messageSource;
 
     @Mock
     private Parser parser;
+    @Mock
+    private AppProps appProps;
 
     @Mock
     private FAQDao faqDao;
 
+    @BeforeEach
+     void setUp() {
+        Mockito.lenient().when(appProps.getLocale()).thenReturn(Locale.forLanguageTag("en"));
+        Mockito.lenient().when(messageSource.getMessage(any(), any(), any())).thenReturn("");
+    }
     @Test
-    void startExamWithWrongType() throws URISyntaxException, IOException, CsvException {
+    void startExamWithWrongType() {
         var faq = new FAQ();
         faq.setQuestionType("100");
         Mockito.lenient().when(parser.getFAQFromFile(FAQ.class))
@@ -40,14 +50,13 @@ class ExamServiceImplTest {
         String inputName = "name \n 11 \n A \n";
         InputStream inN = new ByteArrayInputStream(inputName.getBytes());
         System.setIn(inN);
-
         var result = examServiceImpl.startExam();
 
-        assertEquals(false, result);
+        assertThat(result).isFalse();
     }
 
     @Test
-    void startExamWithRightType() throws URISyntaxException, IOException, CsvException {
+    void startExamWithRightType() {
         var faq1 = new FAQ();
         faq1.setQuestionType("0");
         var faq2 = new FAQ();
@@ -60,6 +69,6 @@ class ExamServiceImplTest {
         InputStream inN = new ByteArrayInputStream(inputName.getBytes());
         System.setIn(inN);
         var result = examServiceImpl.startExam();
-        assertEquals(true, result);
+        assertThat(result).isTrue();
     }
 }
