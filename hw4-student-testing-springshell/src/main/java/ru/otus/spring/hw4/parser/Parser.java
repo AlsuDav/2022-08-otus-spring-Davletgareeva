@@ -2,9 +2,10 @@ package ru.otus.spring.hw4.parser;
 
 import ru.otus.spring.hw4.domain.FAQ;
 
+import java.io.File;
 import java.util.List;
 
 
 public interface Parser {
-    List<FAQ> getFAQFromFile(Class<? extends FAQ> clazz);
+    List<FAQ> getFAQFromFile(Class<? extends FAQ> clazz, File file);
 }

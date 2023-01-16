@@ -1,10 +1,13 @@
 package ru.otus.spring.hw4.service;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
+import ru.otus.spring.hw4.FileLoader;
 import ru.otus.spring.hw4.config.AppProps;
+import ru.otus.spring.hw4.config.ServicesConfig;
 import ru.otus.spring.hw4.dao.FAQDao;
 import ru.otus.spring.hw4.domain.FAQ;
 import ru.otus.spring.hw4.domain.User;
@@ -16,25 +19,23 @@ import java.util.List;
 import java.util.Scanner;
 
 @Service
+@RequiredArgsConstructor
 public class ExamServiceImpl implements ExamService {
     private final FAQDao faqDao;
-    private Parser parser;
+    private final Parser parser;
+    private final FileLoader fileLoader;
+    private final ServicesConfig servicesConfig;
     private final MessageSource messageSource;
     private final AppProps props;
-    private static Logger log = LoggerFactory.getLogger(ExamServiceImpl.class);
-
-    public ExamServiceImpl(FAQDao faqDao, Parser parser, MessageSource messageSource, AppProps props) {
-        this.faqDao = faqDao;
-        this.parser = parser;
-        this.messageSource = messageSource;
-        this.props = props;
-    }
+    private static final Logger log = LoggerFactory.getLogger(ExamServiceImpl.class);
 
     @Override
     public boolean startExam() {
         var flag = true;
+        var file = fileLoader.getFileFromResource(servicesConfig.getName());
+
         try {
-            List<FAQ> questions = parser.getFAQFromFile(FAQ.class);
+            List<FAQ> questions = parser.getFAQFromFile(FAQ.class, file);
 
             Scanner scanner = new Scanner(System.in);
             printInfo("user.name", new String[]{});

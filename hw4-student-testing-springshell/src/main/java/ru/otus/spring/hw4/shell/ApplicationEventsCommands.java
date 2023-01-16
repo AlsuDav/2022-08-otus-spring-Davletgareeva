@@ -26,10 +26,10 @@ public class ApplicationEventsCommands {
     @ShellMethodAvailability(value = "isPublishEventCommandAvailable")
     public String exam() {
         examService.startExam();
-        return "Событие опубликовано";
+        return "Тестирование завершено.";
     }
 
     private Availability isPublishEventCommandAvailable() {
-        return userName == null? Availability.unavailable("Сначала залогиньтесь"): Availability.available();
+        return userName == null? Availability.unavailable("Перед запуском тестирования просим пройти регистрацию. Для этого введите команду l или login"): Availability.available();
     }
 }
