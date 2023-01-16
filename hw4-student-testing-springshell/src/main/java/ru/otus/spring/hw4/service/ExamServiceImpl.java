@@ -49,7 +49,12 @@ public class ExamServiceImpl implements ExamService {
                 }
             }
             scanner.close();
-            var user = User.builder().fio(fio).groupNumber(group).score(countRightAnswers).build();
+            var user = User
+                    .builder()
+                    .fio(fio)
+                    .groupNumber(group)
+                    .score(countRightAnswers)
+                    .build();
             printResults(user, questions.size());
         } catch (ParseFileException | QuestionTypeNotFound e) {
             flag = false;
@@ -58,9 +63,11 @@ public class ExamServiceImpl implements ExamService {
         return flag;
 
     }
-    public void printInfo(String code, String[] args){
+
+    public void printInfo(String code, String[] args) {
         System.out.println(messageSource.getMessage(code, args, props.getLocale()));
     }
+
     public void printResults(User user, int maxScore) {
         printInfo("user.info", new String[]{user.fio(), user.groupNumber(), user.score().toString()});
         printInfo("user.maxScore", new String[]{String.valueOf(maxScore)});
