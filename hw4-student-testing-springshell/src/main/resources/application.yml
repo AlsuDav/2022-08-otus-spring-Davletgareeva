@@ -1,0 +1,22 @@
+testing:
+  file:
+    name: test.csv
+
+spring:
+  main:
+    allow-circular-references: true
+  messages:
+    basename: "i18n/appmessages"
+    encoding: "UTF-8"
+
+server:
+  port: 8080
+
+application:
+  message: "Test Props msg"
+  locale: en
+#  locale: ru_RU
+
+#logging:
+#  level:
+#    root: ERROR
