@@ -1,10 +1,12 @@
 package ru.otus.spring.hw9.dao.impl;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
 import ru.otus.spring.hw9.dao.AuthorDao;
 import ru.otus.spring.hw9.domain.Author;
+import ru.otus.spring.hw9.exception.CannotInsertException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,8 +31,12 @@ public class AuthorDaoJdbc implements AuthorDao {
 
     @Override
     public void insert(Author author) {
-        jdbc.update("insert into author (id, name) values (:id, :name)",
-                Map.of("id", author.getId(), "name", author.getName()));
+        var existingAuthor = this.getByName(author.getName());
+        if (existingAuthor != null) {
+            throw new CannotInsertException("Author with name %s already exist".formatted(author.getName()));
+        }
+        jdbc.update("insert into author (name) values (:name)",
+                Map.of("name", author.getName()));
     }
 
     @Override
@@ -52,6 +58,19 @@ public class AuthorDaoJdbc implements AuthorDao {
         jdbc.update(
                 "delete from author where id = :id", params
         );
+    }
+
+    @Override
+    public Author getByName(String name) {
+        Map<String, Object> params = Collections.singletonMap("name", name);
+        try {
+            return jdbc.queryForObject(
+                    "select id, name from author where name = :name", params, new AuthorMapper()
+            );
+        } catch (
+                EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     private static class AuthorMapper implements RowMapper<Author> {

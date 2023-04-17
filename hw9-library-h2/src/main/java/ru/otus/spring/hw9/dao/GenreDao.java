@@ -8,9 +8,11 @@ public interface GenreDao {
 
     int count();
 
-    void insert(Genre person);
+    void insert(Genre genre);
 
     Genre getById(long id);
+
+    Genre getByName(String genreName);
 
     List<Genre> getAll();
 

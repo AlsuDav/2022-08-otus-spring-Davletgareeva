@@ -29,19 +29,19 @@ values (1, 'J.R.R. Tolkien'),
        (9, 'Agatha Christie'),
        (10, 'Samuel Beckett');
 
-insert into book(id, book_name, author_id)
-values (1, 'The Hobbit', 1),
-       (2, 'The Three Musketeers', 2),
-       (3, 'Life of Pi', 3),
-       (4, 'The Poets Laureate Anthology', 4),
-       (5, 'To Kill a Mockingbird', 5),
-       (6, '1984', 6),
-       (7, 'Romeo and Juliet', 7),
-       (8, 'Sherlock Holmes', 8),
-       (9, 'And There Were None', 9),
-       (10, 'Murder on The Orient Express', 9),
-       (11, 'Hamlet', 7),
-       (12, 'Waiting For Godot', 10);
+insert into book(id, book_name)
+values (1, 'The Hobbit'),
+       (2, 'The Three Musketeers'),
+       (3, 'Life of Pi'),
+       (4, 'The Poets Laureate Anthology'),
+       (5, 'To Kill a Mockingbird'),
+       (6, '1984'),
+       (7, 'Romeo and Juliet'),
+       (8, 'Sherlock Holmes'),
+       (9, 'And There Were None'),
+       (10, 'Murder on The Orient Express'),
+       (11, 'Hamlet'),
+       (12, 'Waiting For Godot');
 
 insert into book_genres(book_id, genre_id)
 values

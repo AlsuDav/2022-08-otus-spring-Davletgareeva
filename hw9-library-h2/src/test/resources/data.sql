@@ -14,8 +14,7 @@ values (1, 'Action and Adventure'),
 -- And There Were None by Agatha Christie
 -- Murder on The Orient Express by Agatha Christie
        (5, 'Drama');
---     Hamlet by William Shakespeare
--- Waiting For Godot by Samuel Beckett
+
 
 insert into author(id, name)
 values (1, 'J.R.R. Tolkien'),
@@ -27,25 +26,32 @@ values (1, 'J.R.R. Tolkien'),
        (7, 'William Shakespeare'),
        (8, 'Arthur Conan Doyle'),
        (9, 'Agatha Christie'),
-       (10, 'Samuel Beckett');
+       (10, 'Samuel Beckett'),
+       (11, 'Anonymous');
 
-insert into book(id, book_name, author_id)
-values (1, 'The Hobbit', 1),
-       (2, 'The Three Musketeers', 2),
-       (3, 'Life of Pi', 3),
-       (4, 'The Poets Laureate Anthology', 4),
-       (5, 'To Kill a Mockingbird', 5),
-       (6, '1984', 6),
-       (7, 'Romeo and Juliet', 7),
-       (8, 'Sherlock Holmes', 8),
-       (9, 'And There Were None', 9),
-       (10, 'Murder on The Orient Express', 9),
-       (11, 'Hamlet', 7),
-       (12, 'Waiting For Godot', 10);
+insert into book(id, book_name)
+values (1, 'The Hobbit'),
+       (2, 'The Three Musketeers'),
+       (3, 'Life of Pi'),
+       (4, 'The Poets Laureate Anthology'),
+       (5, 'To Kill a Mockingbird'),
+       (6, '1984'),
+       (7, 'Romeo and Juliet'),
+       (8, 'Sherlock Holmes'),
+       (9, 'And There Were None'),
+       (10, 'Murder on The Orient Express'),
+       (11, 'Hamlet'),
+       (12, 'Waiting For Godot');
 
 insert into book_genres(book_id, genre_id)
 values
-    (1, 1), (2, 1), (3, 1), (4, 2), (5, 3), (6, 3), (7, 3), (8, 4), (9, 4), (10, 4), (11, 5), (12, 5);
+    (1, 1), (2, 1), (3, 1),
+    (4, 2), (5, 3), (6, 3), (7, 3),
+    (8, 4), (9, 4), (10, 4),
+    (11, 5), (12, 5),
+--     для проверки случая, когда у книги несколько жанров
+    (1, 5)
+;
 
 insert into author_books(author_id, book_id)
 values
@@ -60,4 +66,6 @@ values
     (8, 8),
     (9, 9),
     (9, 10),
-    (10, 12);
+    (10, 12),
+--     для проверки случая, когда у книги несколько авторов
+    (11, 1);
