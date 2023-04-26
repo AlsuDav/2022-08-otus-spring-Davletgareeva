@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import ru.otus.spring.hw9.dao.AuthorDao;
 import ru.otus.spring.hw9.domain.Author;
 import ru.otus.spring.hw9.exception.CannotInsertException;
+import ru.otus.spring.hw9.exception.CannotUpdateException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,9 +25,9 @@ public class AuthorDaoJdbc implements AuthorDao {
     }
 
     @Override
-    public int count() {
-        Integer count = jdbc.queryForObject("select count(*) from author", Collections.emptyMap(), Integer.class);
-        return count == null ? 0 : count;
+    public Long count() {
+        Long count = jdbc.queryForObject("select count(*) from author", Collections.emptyMap(), Long.class);
+        return count == null ? 0L : count;
     }
 
     @Override
@@ -42,9 +43,11 @@ public class AuthorDaoJdbc implements AuthorDao {
     @Override
     public Author getById(long id) {
         Map<String, Object> params = Collections.singletonMap("id", id);
+
         return jdbc.queryForObject(
                 "select id, name from author where id = :id", params, new AuthorMapper()
         );
+
     }
 
     @Override
@@ -71,6 +74,20 @@ public class AuthorDaoJdbc implements AuthorDao {
                 EmptyResultDataAccessException e) {
             return null;
         }
+    }
+
+    @Override
+    public void update(Author author) {
+        try {
+            this.getById(author.getId());
+        } catch (EmptyResultDataAccessException e) {
+            throw new CannotUpdateException("Author with id %s not found".formatted(author.getId()));
+        }
+        jdbc.update("update author set name = :name where id = :id",
+                Map.of("id", author.getId(),
+                        "name", author.getName()
+                ));
+
     }
 
     private static class AuthorMapper implements RowMapper<Author> {

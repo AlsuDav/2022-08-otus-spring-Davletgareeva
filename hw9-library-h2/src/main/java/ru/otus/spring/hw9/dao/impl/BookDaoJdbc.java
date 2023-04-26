@@ -13,6 +13,7 @@ import ru.otus.spring.hw9.domain.Author;
 import ru.otus.spring.hw9.domain.Book;
 import ru.otus.spring.hw9.domain.Genre;
 import ru.otus.spring.hw9.exception.CannotInsertException;
+import ru.otus.spring.hw9.exception.CannotUpdateException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,9 +35,9 @@ public class BookDaoJdbc implements BookDao {
     }
 
     @Override
-    public int count() {
+    public Long count() {
         Integer count = jdbc.queryForObject("select count(*) from book", Collections.emptyMap(), Integer.class);
-        return count == null ? 0 : count;
+        return count == null ? 0L : count;
     }
 
     @Override
@@ -54,18 +55,13 @@ public class BookDaoJdbc implements BookDao {
 
 
         var bookFromDb = this.getByName(book.getBookName());
-        for (var author : book.getAuthors()) {
-            var authorName = author.getName();
-            var authorFromDb = authorDao.getByName(authorName);
-            if (authorFromDb == null) {
-                authorDao.insert(Author.builder().name(authorName).build());
-                authorFromDb = authorDao.getByName(authorName);
-            }
-            jdbc.update("insert into author_books (author_id, book_id) values (:authorId, :bookId)",
-                    Map.of("authorId", authorFromDb.getId(),
-                            "bookId", bookFromDb.getId()
-                    ));
-        }
+
+        insertAuthorForBook(book, bookFromDb.getId());
+        insertGenreForBook(book, bookFromDb.getId());
+
+    }
+
+    private void insertGenreForBook(Book book, Long bookId) {
         for (var genre : book.getGenres()) {
             var genreName = genre.getGenreName();
             var genreFromDb = genreDao.getByName(genreName);
@@ -75,7 +71,22 @@ public class BookDaoJdbc implements BookDao {
             }
             jdbc.update("insert into book_genres (book_id, genre_id) values (:bookId, :genreId)",
                     Map.of("genreId", genreFromDb.getId(),
-                            "bookId", bookFromDb.getId()
+                            "bookId", bookId
+                    ));
+        }
+    }
+
+    private void insertAuthorForBook(Book book, Long bookId) {
+        for (var author : book.getAuthors()) {
+            var authorName = author.getName();
+            var authorFromDb = authorDao.getByName(authorName);
+            if (authorFromDb == null) {
+                authorDao.insert(Author.builder().name(authorName).build());
+                authorFromDb = authorDao.getByName(authorName);
+            }
+            jdbc.update("insert into author_books (author_id, book_id) values (:authorId, :bookId)",
+                    Map.of("authorId", authorFromDb.getId(),
+                            "bookId", bookId
                     ));
         }
     }
@@ -105,7 +116,7 @@ public class BookDaoJdbc implements BookDao {
                                          left join authors
                                                    on cb.book_id = authors.book_id
                                          left join genres
-                                                   on cb.book_id = genres.book_id 
+                                                   on cb.book_id = genres.book_id
                             """
                     , params, new BookMapper()
             );
@@ -180,31 +191,62 @@ public class BookDaoJdbc implements BookDao {
         );
     }
 
-    private static class BookMapper implements RowMapper<Book> {
+    @Override
+    public void update(Book book) {
 
+        var existingBook = this.getById(book.getId());
+        if (existingBook == null) {
+            throw new CannotUpdateException("Book with id %s not found".formatted(book.getId()));
+        }
+        jdbc.update("update book set book_name = :name where id = :id",
+                Map.of("id", book.getId(),
+                        "name", book.getBookName()
+                ));
+        deleteOldRelationsForBook(book);
+        insertGenreForBook(book, book.getId());
+        insertAuthorForBook(book, book.getId());
+
+    }
+
+    private void deleteOldRelationsForBook(Book book) {
+        Map<String, Object> params = Collections.singletonMap("id", book.getId());
+        jdbc.update(
+                """ 
+                        delete from book_genres where book_id = :id;
+                        delete from author_books where book_id = :id;
+                        """, params
+        );
+    }
+
+    private static class BookMapper implements RowMapper<Book> {
 
         @Override
         public Book mapRow(ResultSet rs, int i) throws SQLException {
-            long bookId = rs.getLong("book_id");
-            String bookName = rs.getString("book_name");
-            Book currentBook = Book.builder()
-                    .id(bookId)
-                    .bookName(bookName)
-                    .authors(new HashSet<>())
-                    .genres(new HashSet<>())
-                    .build();
-
-            while (rs.next()) {
-                currentBook.getAuthors().add(Author.builder()
-                        .id(rs.getLong("author_id"))
-                        .name(rs.getString("author_name"))
-                        .build());
-                currentBook.getGenres().add(Genre.builder()
-                        .id(rs.getLong("genre_id"))
-                        .genreName(rs.getString("genre_name"))
-                        .build());
-
-            }
+            Book currentBook = null;
+            do {
+                if (currentBook == null) {
+                    long bookId = rs.getLong("book_id");
+                    String bookName = rs.getString("book_name");
+                    currentBook = Book.builder()
+                            .id(bookId)
+                            .bookName(bookName)
+                            .authors(new HashSet<>())
+                            .genres(new HashSet<>())
+                            .build();
+                }
+                if (rs.getLong("author_id") != 0 && rs.getString("author_name") != null) {
+                    currentBook.getAuthors().add(Author.builder()
+                            .id(rs.getLong("author_id"))
+                            .name(rs.getString("author_name"))
+                            .build());
+                }
+                if (rs.getLong("genre_id") != 0 && rs.getString("genre_name") != null) {
+                    currentBook.getGenres().add(Genre.builder()
+                            .id(rs.getLong("genre_id"))
+                            .genreName(rs.getString("genre_name"))
+                            .build());
+                }
+            } while (rs.next());
             return currentBook;
         }
     }
@@ -240,7 +282,7 @@ public class BookDaoJdbc implements BookDao {
                         .genreName(rs.getString("genre_name"))
                         .build());
             }
-            return new ArrayList<>(currentBooks.values()) ;
+            return new ArrayList<>(currentBooks.values());
         }
     }
 }

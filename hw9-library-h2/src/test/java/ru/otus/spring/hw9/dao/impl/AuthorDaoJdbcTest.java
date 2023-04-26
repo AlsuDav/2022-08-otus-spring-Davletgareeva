@@ -8,8 +8,10 @@ import org.springframework.context.annotation.Import;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.test.context.transaction.BeforeTransaction;
+import ru.otus.spring.hw9.dao.AuthorDao;
 import ru.otus.spring.hw9.domain.Author;
 import ru.otus.spring.hw9.exception.CannotInsertException;
+import ru.otus.spring.hw9.exception.CannotUpdateException;
 
 import java.util.List;
 
@@ -26,33 +28,32 @@ class AuthorDaoJdbcTest {
     private static final String NOT_EXISTING_AUTHOR_NAME = "Antoine Marie Jean-Baptiste Roger vicomte de Saint-Exupéry";
 
     @Autowired
-    private AuthorDaoJdbc authorDao;
+    private AuthorDao authorDao;
 
     @BeforeTransaction
-    void beforeTransaction(){
+    void beforeTransaction() {
         System.out.println("beforeTransaction");
     }
 
     @AfterTransaction
-    void afterTransaction(){
+    void afterTransaction() {
         System.out.println("afterTransaction");
     }
 
     @DisplayName("возвращать ожидаемое количество авторов в БД")
     @Test
     void shouldReturnExpectedAuthorCount() {
-        int actualAuthorsCount = authorDao.count();
+        Long actualAuthorsCount = authorDao.count();
         assertThat(actualAuthorsCount).isEqualTo(EXPECTED_AUTHORS_COUNT);
     }
-
 
     @DisplayName("добавлять автора в БД")
     @Test
     void shouldInsertAuthor_whenAuthorNotExist() {
-        Author expectedAuthor = new Author(100L, NOT_EXISTING_AUTHOR_NAME);
+        Author expectedAuthor = Author.builder().name(NOT_EXISTING_AUTHOR_NAME).build();
         authorDao.insert(expectedAuthor);
-        Author actualAuthor = authorDao.getById(expectedAuthor.getId());
-        assertThat(actualAuthor).usingRecursiveComparison().isEqualTo(expectedAuthor);
+        Author actualAuthor = authorDao.getByName(expectedAuthor.getName());
+        assertThat(actualAuthor.getName()).isEqualTo(expectedAuthor.getName());
     }
 
     @DisplayName("не добавлять автора в БД, если он уже существует")
@@ -97,6 +98,25 @@ class AuthorDaoJdbcTest {
     void shouldReturnExpectedAuthorsList() {
         List<Author> actualAuthorList = authorDao.getAll();
         assertThat(actualAuthorList).hasSize(EXPECTED_AUTHORS_COUNT);
+
+    }
+
+    @DisplayName("обновлять данные автора")
+    @Test
+    void shouldUpdateAuthor() {
+        Author author = new Author(EXISTING_AUTHOR_ID, EXISTING_AUTHOR_NAME + "upd");
+        authorDao.update(author);
+        Author updatedAuthor = authorDao.getById(author.getId());
+        assertThat(updatedAuthor).usingRecursiveComparison().isEqualTo(author);
+
+    }
+
+    @DisplayName("не обновлять данные автора, если его нет в бд")
+    @Test
+    void shouldNotUpdateAuthor_whenAuthorNotExist() {
+        Author author = new Author(100L, EXISTING_AUTHOR_NAME + "upd");
+        assertThatThrownBy(() -> authorDao.update(author))
+                .isInstanceOf(CannotUpdateException.class);
 
     }
 }

@@ -8,8 +8,10 @@ import org.springframework.context.annotation.Import;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.test.context.transaction.BeforeTransaction;
+import ru.otus.spring.hw9.dao.GenreDao;
 import ru.otus.spring.hw9.domain.Genre;
 import ru.otus.spring.hw9.exception.CannotInsertException;
+import ru.otus.spring.hw9.exception.CannotUpdateException;
 
 import java.util.List;
 
@@ -26,7 +28,7 @@ class GenreDaoJdbcTest {
     private static final String NOT_EXISTING_GENRE_NAME = "Historical";
 
     @Autowired
-    private GenreDaoJdbc genreDaoJdbc;
+    private GenreDao genreDao;
 
     @BeforeTransaction
     void beforeTransaction(){
@@ -41,7 +43,7 @@ class GenreDaoJdbcTest {
     @DisplayName("возвращать ожидаемое количество жанров в БД")
     @Test
     void shouldReturnExpectedGenreCount() {
-        int actualGenresCount = genreDaoJdbc.count();
+        long actualGenresCount = genreDao.count();
         assertThat(actualGenresCount).isEqualTo(EXPECTED_GENRES_COUNT);
     }
 
@@ -49,10 +51,10 @@ class GenreDaoJdbcTest {
     @DisplayName("добавлять жанр в БД, если его не существует")
     @Test
     void shouldInsertGenre_whenGenreNotExist() {
-        Genre expectedGenre = new Genre(6L, NOT_EXISTING_GENRE_NAME);
-        genreDaoJdbc.insert(expectedGenre);
-        Genre actualGenre = genreDaoJdbc.getById(expectedGenre.getId());
-        assertThat(actualGenre).usingRecursiveComparison().isEqualTo(actualGenre);
+        Genre expectedGenre = Genre.builder().genreName(NOT_EXISTING_GENRE_NAME).build();
+        genreDao.insert(expectedGenre);
+        Genre actualGenre = genreDao.getByName(expectedGenre.getGenreName());
+        assertThat(actualGenre.getGenreName()).isEqualTo(expectedGenre.getGenreName());
     }
 
     @DisplayName("не добавлять жанр в БД, если он уже существует")
@@ -60,7 +62,7 @@ class GenreDaoJdbcTest {
     void shouldNotInsertGenre_whenGenreExist() {
         Genre expectedGenre = new Genre(6L, EXISTING_GENRE_NAME);
 
-        assertThatThrownBy(() -> genreDaoJdbc.insert(expectedGenre))
+        assertThatThrownBy(() -> genreDao.insert(expectedGenre))
                 .isInstanceOf(CannotInsertException.class);
     }
 
@@ -68,7 +70,7 @@ class GenreDaoJdbcTest {
     @Test
     void shouldReturnExpectedGenreById() {
         Genre expectedGenre = new Genre(EXISTING_GENRE_ID, EXISTING_GENRE_NAME);
-        Genre actualGenre = genreDaoJdbc.getById(expectedGenre.getId());
+        Genre actualGenre = genreDao.getById(expectedGenre.getId());
         assertThat(actualGenre).usingRecursiveComparison().isEqualTo(expectedGenre);
     }
 
@@ -76,27 +78,46 @@ class GenreDaoJdbcTest {
     @Test
     void shouldReturnExpectedGenreByName() {
         Genre expectedGenre = new Genre(EXISTING_GENRE_ID, EXISTING_GENRE_NAME);
-        Genre actualGenre = genreDaoJdbc.getByName(expectedGenre.getGenreName());
+        Genre actualGenre = genreDao.getByName(expectedGenre.getGenreName());
         assertThat(actualGenre).usingRecursiveComparison().isEqualTo(expectedGenre);
     }
 
     @DisplayName("удалять заданный жанр по его id")
     @Test
     void shouldCorrectDeleteGenreById() {
-        assertThatCode(() -> genreDaoJdbc.getById(EXISTING_GENRE_ID))
+        assertThatCode(() -> genreDao.getById(EXISTING_GENRE_ID))
                 .doesNotThrowAnyException();
 
-        genreDaoJdbc.deleteById(EXISTING_GENRE_ID);
+        genreDao.deleteById(EXISTING_GENRE_ID);
 
-        assertThatThrownBy(() -> genreDaoJdbc.getById(EXISTING_GENRE_ID))
+        assertThatThrownBy(() -> genreDao.getById(EXISTING_GENRE_ID))
                 .isInstanceOf(EmptyResultDataAccessException.class);
     }
 
     @DisplayName("возвращать ожидаемый список авторов")
     @Test
     void shouldReturnExpectedGenresList() {
-        List<Genre> actualGenreList = genreDaoJdbc.getAll();
+        List<Genre> actualGenreList = genreDao.getAll();
         assertThat(actualGenreList).hasSize(EXPECTED_GENRES_COUNT);
+
+    }
+
+    @DisplayName("обновлять данные по жанру")
+    @Test
+    void shouldUpdateGenre() {
+        Genre genre = new Genre(EXISTING_GENRE_ID, EXISTING_GENRE_NAME + "upd");
+        genreDao.update(genre);
+        Genre updatedGenre = genreDao.getById(genre.getId());
+        assertThat(updatedGenre).usingRecursiveComparison().isEqualTo(genre);
+
+    }
+
+    @DisplayName("не обновлять данные по жанру, если его нет в бд")
+    @Test
+    void shouldNotUpdateGenre_whenGenreNotExist() {
+        Genre genre = new Genre(100L, EXISTING_GENRE_NAME + "upd");
+        assertThatThrownBy(() -> genreDao.update(genre))
+                .isInstanceOf(CannotUpdateException.class);
 
     }
 }

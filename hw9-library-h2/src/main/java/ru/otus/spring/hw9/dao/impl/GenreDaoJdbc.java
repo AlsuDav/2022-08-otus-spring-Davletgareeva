@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import ru.otus.spring.hw9.dao.GenreDao;
 import ru.otus.spring.hw9.domain.Genre;
 import ru.otus.spring.hw9.exception.CannotInsertException;
+import ru.otus.spring.hw9.exception.CannotUpdateException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,9 +24,9 @@ public class GenreDaoJdbc implements GenreDao {
     }
 
     @Override
-    public int count() {
+    public Long count() {
         Integer count = jdbc.queryForObject("select count(*) from genre", Collections.emptyMap(), Integer.class);
-        return count == null ? 0 : count;
+        return count == null ? 0L : count;
     }
 
     @Override
@@ -70,6 +71,20 @@ public class GenreDaoJdbc implements GenreDao {
                 EmptyResultDataAccessException e) {
             return null;
         }
+    }
+
+    @Override
+    public void update(Genre genre) {
+        try {
+            this.getById(genre.getId());
+        } catch (EmptyResultDataAccessException e) {
+            throw new CannotUpdateException("Genre with id %s not found".formatted(genre.getId()));
+        }
+        jdbc.update("update genre set genre_name = :name where id = :id",
+                Map.of("id", genre.getId(),
+                        "name", genre.getGenreName()
+                ));
+
     }
 
     private static class GenreMapper implements RowMapper<Genre> {
