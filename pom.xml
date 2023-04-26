@@ -13,6 +13,7 @@
    <modules>
        <module>hw1-student-testing</module>
        <module>hw2-student-testing</module>
+       <module>hw9-library-h2</module>
    </modules>
 
 </project>
