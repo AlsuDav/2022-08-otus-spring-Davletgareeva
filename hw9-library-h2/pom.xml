@@ -15,6 +15,7 @@
 	<description>hw9-library-h2</description>
 	<properties>
 		<java.version>17</java.version>
+		<spring.shell.version>3.0.2</spring.shell.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -41,6 +42,13 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.shell</groupId>
+			<artifactId>spring-shell-starter</artifactId>
+			<version>${spring.shell.version}</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
