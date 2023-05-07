@@ -32,6 +32,7 @@ public class AuthorDaoJdbc implements AuthorDao {
 
     @Override
     public void insert(Author author) {
+        //TODO:вынести проверки в бизнес логику
         var existingAuthor = this.getByName(author.getName());
         if (existingAuthor != null) {
             throw new CannotInsertException("Author with name %s already exist".formatted(author.getName()));

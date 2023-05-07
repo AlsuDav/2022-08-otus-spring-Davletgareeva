@@ -1,3 +1,4 @@
+-- TODO: добавить проверку на уникальность
 DROP TABLE IF EXISTS genre;
 DROP SEQUENCE IF EXISTS genre_id_seq;
 CREATE SEQUENCE genre_id_seq START WITH 20;

@@ -10,6 +10,7 @@ import ru.otus.spring.hw9.exception.NotFoundException;
 
 import java.util.List;
 
+//TODO: выделить интерфейсы для сервисов
 @Service
 @RequiredArgsConstructor
 public class AuthorService {

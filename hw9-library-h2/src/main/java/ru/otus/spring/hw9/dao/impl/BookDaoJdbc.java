@@ -21,7 +21,7 @@ import java.util.*;
 
 @Repository
 public class BookDaoJdbc implements BookDao {
-
+    //TODO:переставить методы по порядку: public, protected, private
     private final NamedParameterJdbcOperations jdbc;
 
     private final AuthorDao authorDao;
@@ -62,6 +62,7 @@ public class BookDaoJdbc implements BookDao {
     }
 
     private void insertGenreForBook(Book book, Long bookId) {
+        //TODO: делать инсерт с возвратом id
         for (var genre : book.getGenres()) {
             var genreName = genre.getGenreName();
             var genreFromDb = genreDao.getByName(genreName);
