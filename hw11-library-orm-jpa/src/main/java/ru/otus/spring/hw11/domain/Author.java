@@ -1,17 +1,21 @@
 package ru.otus.spring.hw11.domain;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Data
-@RequiredArgsConstructor
-@Builder
-@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "author")
 public class Author {
-    private final Long id;
-    private final String name;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "name")
+    private String name;
 
     @Override
     public int hashCode() {

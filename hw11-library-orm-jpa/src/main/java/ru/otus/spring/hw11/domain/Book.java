@@ -1,19 +1,38 @@
 package ru.otus.spring.hw11.domain;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
-import java.util.Set;
+import java.util.List;
 
 @Data
-@RequiredArgsConstructor
-@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "book")
 public class Book {
-    private final Long id;
-    private final String bookName;
-    private final Set<Author> authors;
-    private final Set<Genre> genres;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "book_name")
+    private String bookName;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "author_books", joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name="author_id"))
+    private List<Author> authors;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "book_genres", joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name="genre_id"))
+    private List<Genre> genres;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "book_id")
+    private List<Comment> comments;
+
 
     @Override
     public int hashCode() {

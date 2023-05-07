@@ -42,3 +42,11 @@ CREATE TABLE author_books(
     FOREIGN KEY (book_id) REFERENCES book(id) ON DELETE CASCADE ,
     FOREIGN KEY (author_id) REFERENCES author(id) ON DELETE CASCADE
 );
+
+DROP TABLE IF EXISTS comment;
+CREATE TABLE comment(
+    id BIGSERIAL,
+    book_id BIGINT,
+    comment_text TEXT,
+    FOREIGN KEY (book_id) REFERENCES book(id) ON DELETE CASCADE
+)

@@ -61,3 +61,9 @@ values
     (9, 9),
     (9, 10),
     (10, 12);
+
+insert into comment(id, book_id, comment_text)
+values
+    (1, 1, 'great!'),
+    (2, 1, 'my favourite story'),
+    (3, 2, 'а вы тоже в детстве спорили кто же будет Дартаньяном?)))');

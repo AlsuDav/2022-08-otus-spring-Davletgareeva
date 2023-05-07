@@ -1,15 +1,21 @@
 package ru.otus.spring.hw11.domain;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Data
-@RequiredArgsConstructor
-@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "genre")
 public class Genre {
-    private final Long id;
-    private final String genreName;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "genre_name")
+    private String genreName;
 
     @Override
     public int hashCode() {
