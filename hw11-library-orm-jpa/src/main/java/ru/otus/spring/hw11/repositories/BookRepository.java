@@ -1,10 +1,10 @@
-package ru.otus.spring.hw11.dao;
+package ru.otus.spring.hw11.repositories;
 
-import ru.otus.spring.hw11.domain.Book;
+import ru.otus.spring.hw11.entity.Book;
 
 import java.util.List;
 
-public interface BookDao {
+public interface BookRepository {
 
     Long count();
 

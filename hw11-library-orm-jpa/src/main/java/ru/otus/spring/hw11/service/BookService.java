@@ -3,10 +3,10 @@ package ru.otus.spring.hw11.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
-import ru.otus.spring.hw11.dao.BookDao;
-import ru.otus.spring.hw11.domain.Author;
-import ru.otus.spring.hw11.domain.Book;
-import ru.otus.spring.hw11.domain.Genre;
+import ru.otus.spring.hw11.repositories.BookRepository;
+import ru.otus.spring.hw11.entity.Author;
+import ru.otus.spring.hw11.entity.Book;
+import ru.otus.spring.hw11.entity.Genre;
 import ru.otus.spring.hw11.exception.CannotUpdateException;
 import ru.otus.spring.hw11.exception.NotFoundException;
 
@@ -18,19 +18,19 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BookService {
 
-    private final BookDao bookDao;
+    private final BookRepository bookRepository;
 
     public List<Book> getAllBooks() {
-        return bookDao.getAll();
+        return bookRepository.getAll();
     }
 
     public Book getBookByName(String bookName) {
-        return bookDao.getByName(bookName);
+        return bookRepository.getByName(bookName);
     }
 
     public Book getBookById(Long bookId) {
         try {
-            return bookDao.getById(bookId);
+            return bookRepository.getById(bookId);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Книга с id=%d не найдена".formatted(bookId));
         }
@@ -42,16 +42,16 @@ public class BookService {
         Set<Genre> genres = genreNames.stream().map(genreName -> Genre.builder().genreName(genreName).build()).collect(Collectors.toSet());
 
         Book book = Book.builder().bookName(bookName).authors(authors).genres(genres).build();
-        bookDao.insert(book);
+        bookRepository.insert(book);
     }
 
     public void deleteBook(Long id) {
-        bookDao.deleteById(id);
+        bookRepository.deleteById(id);
 
     }
 
     public Long getCountOfBooks() {
-        return bookDao.count();
+        return bookRepository.count();
     }
 
     public void updateBook(Long id, String bookName, List<String> authorNames, List<String> genreNames) {
@@ -64,7 +64,7 @@ public class BookService {
         Set<Genre> genres = genreNames.stream().map(genreName -> Genre.builder().genreName(genreName).build()).collect(Collectors.toSet());
 
         Book book = Book.builder().id(id).bookName(bookName).authors(authors).genres(genres).build();
-        bookDao.update(book);
+        bookRepository.update(book);
     }
 
 }

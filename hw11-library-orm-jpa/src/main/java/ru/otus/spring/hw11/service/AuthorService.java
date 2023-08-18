@@ -3,8 +3,8 @@ package ru.otus.spring.hw11.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
-import ru.otus.spring.hw11.dao.AuthorDao;
-import ru.otus.spring.hw11.domain.Author;
+import ru.otus.spring.hw11.repositories.AuthorRepository;
+import ru.otus.spring.hw11.entity.Author;
 import ru.otus.spring.hw11.exception.CannotUpdateException;
 import ru.otus.spring.hw11.exception.NotFoundException;
 
@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthorService {
 
-    private final AuthorDao authorDao;
+    private final AuthorRepository authorDao;
 
     public List<Author> getAllAuthors() {
         return authorDao.getAll();

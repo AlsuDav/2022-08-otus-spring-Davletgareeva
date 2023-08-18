@@ -1,4 +1,4 @@
-package ru.otus.spring.hw11.dao.impl;
+package ru.otus.spring.hw11.repositories.impl;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -7,10 +7,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.test.context.transaction.BeforeTransaction;
-import ru.otus.spring.hw11.dao.BookDao;
-import ru.otus.spring.hw11.domain.Author;
-import ru.otus.spring.hw11.domain.Book;
-import ru.otus.spring.hw11.domain.Genre;
+import ru.otus.spring.hw11.repositories.BookRepository;
+import ru.otus.spring.hw11.entity.Author;
+import ru.otus.spring.hw11.entity.Book;
+import ru.otus.spring.hw11.entity.Genre;
 import ru.otus.spring.hw11.exception.CannotInsertException;
 import ru.otus.spring.hw11.exception.CannotUpdateException;
 
@@ -21,8 +21,8 @@ import static org.assertj.core.api.Assertions.*;
 
     @DisplayName("Dao для работы с книгами (book) должно")
     @JdbcTest
-    @Import({BookDaoJdbc.class, AuthorDaoJdbc.class, GenreDaoJdbc.class})
-    class BookDaoJdbcTest {
+    @Import({BookRepositoryJpa.class, AuthorRepositoryJpa.class, GenreRepositoryJpa.class})
+    class BookRepositoryJpaTest {
 
     private static final int EXPECTED_BOOKS_COUNT = 12;
     private static final Long NOT_EXISTING_BOOK_ID = 1000L;
@@ -71,7 +71,7 @@ import static org.assertj.core.api.Assertions.*;
 
 
     @Autowired
-    private BookDao bookDao;
+    private BookRepository bookRepository;
 
     @BeforeTransaction
     void beforeTransaction() {
@@ -86,15 +86,15 @@ import static org.assertj.core.api.Assertions.*;
     @DisplayName("возвращать ожидаемое количество книг в БД")
     @Test
     void shouldReturnExpectedAuthorCount() {
-        Long actualAuthorsCount = bookDao.count();
+        Long actualAuthorsCount = bookRepository.count();
         assertThat(actualAuthorsCount).isEqualTo(EXPECTED_BOOKS_COUNT);
     }
 
     @DisplayName("добавлять книгу в БД, когда жанр и авторы существуют, а книга нет")
     @Test
     void shouldInsertAuthor_whenBookNotExistButGenreAndAuthorExist() {
-        bookDao.insert(NOT_EXISTING_BOOK_1);
-        Book actualBook = bookDao.getByName(NOT_EXISTING_BOOK_NAME);
+        bookRepository.insert(NOT_EXISTING_BOOK_1);
+        Book actualBook = bookRepository.getByName(NOT_EXISTING_BOOK_NAME);
         assertThat(actualBook.getBookName()).isEqualTo(NOT_EXISTING_BOOK_1.getBookName());
     }
 
@@ -102,8 +102,8 @@ import static org.assertj.core.api.Assertions.*;
     @Test
     void shouldInsertAuthor_whenBookNotExistButGenreAndAuthorNotExist() {
 
-        bookDao.insert(NOT_EXISTING_BOOK_2);
-        Book actualBook = bookDao.getByName(NOT_EXISTING_BOOK_2.getBookName());
+        bookRepository.insert(NOT_EXISTING_BOOK_2);
+        Book actualBook = bookRepository.getByName(NOT_EXISTING_BOOK_2.getBookName());
 
         assertThat(actualBook.getAuthors()).hasSize(NOT_EXISTING_BOOK_2.getAuthors().size());
         assertThat(actualBook.getGenres()).hasSize(NOT_EXISTING_BOOK_2.getGenres().size());
@@ -127,14 +127,14 @@ import static org.assertj.core.api.Assertions.*;
                 .genres(genres)
                 .build();
 
-        assertThatThrownBy(() -> bookDao.insert(book))
+        assertThatThrownBy(() -> bookRepository.insert(book))
                 .isInstanceOf(CannotInsertException.class);
     }
 
     @DisplayName("возвращать ожидаемую книгу по ее id")
     @Test
     void shouldReturnExpectedBookById() {
-        Book actualBook = bookDao.getById(EXISTING_BOOK.getId());
+        Book actualBook = bookRepository.getById(EXISTING_BOOK.getId());
         assertThat(actualBook).usingRecursiveComparison().isEqualTo(EXISTING_BOOK);
     }
 
@@ -145,7 +145,7 @@ import static org.assertj.core.api.Assertions.*;
         Book expectedBook = Book.builder()
                 .id(NOT_EXISTING_BOOK_ID)
                 .build();
-        Book actualBook = bookDao.getById(expectedBook.getId());
+        Book actualBook = bookRepository.getById(expectedBook.getId());
         assertThat(actualBook).isNull();
     }
 
@@ -166,7 +166,7 @@ import static org.assertj.core.api.Assertions.*;
                 .authors(authors)
                 .genres(genres)
                 .build();
-        Book actualBook = bookDao.getByName(expectedBook.getBookName());
+        Book actualBook = bookRepository.getByName(expectedBook.getBookName());
         assertThat(actualBook).usingRecursiveComparison().isEqualTo(expectedBook);
 
     }
@@ -179,25 +179,25 @@ import static org.assertj.core.api.Assertions.*;
                 .id(EXISTING_BOOK_ID)
                 .bookName(NOT_EXISTING_BOOK_NAME)
                 .build();
-        Book actualBook = bookDao.getByName(expectedBook.getBookName());
+        Book actualBook = bookRepository.getByName(expectedBook.getBookName());
         assertThat(actualBook).isNull();
     }
 
     @DisplayName("удалять заданного автора по его id")
     @Test
     void shouldCorrectDeleteBookById() {
-        assertThatCode(() -> bookDao.getById(EXISTING_BOOK_ID))
+        assertThatCode(() -> bookRepository.getById(EXISTING_BOOK_ID))
                 .doesNotThrowAnyException();
 
-        bookDao.deleteById(EXISTING_BOOK_ID);
+        bookRepository.deleteById(EXISTING_BOOK_ID);
 
-        assertThat(bookDao.getById(EXISTING_BOOK_ID)).isNull();
+        assertThat(bookRepository.getById(EXISTING_BOOK_ID)).isNull();
     }
 
     @DisplayName("возвращать ожидаемый список книг")
     @Test
     void shouldReturnExpectedAuthorsList() {
-        List<Book> actualBookList = bookDao.getAll();
+        List<Book> actualBookList = bookRepository.getAll();
         assertThat(actualBookList).hasSize(EXPECTED_BOOKS_COUNT);
     }
 
@@ -211,8 +211,8 @@ import static org.assertj.core.api.Assertions.*;
                 .genres(Set.of(EXISTING_GENRE_1, EXISTING_GENRE_2))
                 .build();
 
-        bookDao.update(book);
-        Book updatedBook = bookDao.getById(book.getId());
+        bookRepository.update(book);
+        Book updatedBook = bookRepository.getById(book.getId());
         assertThat(updatedBook).usingRecursiveComparison().isEqualTo(book);
 
     }
@@ -220,7 +220,7 @@ import static org.assertj.core.api.Assertions.*;
     @DisplayName("не обновлять данные по книге, если ее нет в бд")
     @Test
     void shouldNotUpdateBook_whenItNotExist() {
-        assertThatThrownBy(() -> bookDao.update(NOT_EXISTING_BOOK_1))
+        assertThatThrownBy(() -> bookRepository.update(NOT_EXISTING_BOOK_1))
                 .isInstanceOf(CannotUpdateException.class);
 
     }

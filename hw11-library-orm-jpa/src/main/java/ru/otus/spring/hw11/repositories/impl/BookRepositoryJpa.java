@@ -1,4 +1,4 @@
-package ru.otus.spring.hw11.dao.impl;
+package ru.otus.spring.hw11.repositories.impl;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -6,12 +6,12 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
-import ru.otus.spring.hw11.dao.AuthorDao;
-import ru.otus.spring.hw11.dao.BookDao;
-import ru.otus.spring.hw11.dao.GenreDao;
-import ru.otus.spring.hw11.domain.Author;
-import ru.otus.spring.hw11.domain.Book;
-import ru.otus.spring.hw11.domain.Genre;
+import ru.otus.spring.hw11.repositories.AuthorRepository;
+import ru.otus.spring.hw11.repositories.BookRepository;
+import ru.otus.spring.hw11.repositories.GenreRepository;
+import ru.otus.spring.hw11.entity.Author;
+import ru.otus.spring.hw11.entity.Book;
+import ru.otus.spring.hw11.entity.Genre;
 import ru.otus.spring.hw11.exception.CannotInsertException;
 import ru.otus.spring.hw11.exception.CannotUpdateException;
 
@@ -20,18 +20,18 @@ import java.sql.SQLException;
 import java.util.*;
 
 @Repository
-public class BookDaoJdbc implements BookDao {
+public class BookRepositoryJpa implements BookRepository {
     //TODO:переставить методы по порядку: public, protected, private
     private final NamedParameterJdbcOperations jdbc;
 
-    private final AuthorDao authorDao;
+    private final AuthorRepository authorDao;
 
-    private final GenreDao genreDao;
+    private final GenreRepository genreRepository;
 
-    public BookDaoJdbc(NamedParameterJdbcOperations jdbc, AuthorDao authorDao, GenreDao genreDao) {
+    public BookRepositoryJpa(NamedParameterJdbcOperations jdbc, AuthorRepository authorDao, GenreRepository genreRepository) {
         this.jdbc = jdbc;
         this.authorDao = authorDao;
-        this.genreDao = genreDao;
+        this.genreRepository = genreRepository;
     }
 
     @Override
@@ -65,10 +65,10 @@ public class BookDaoJdbc implements BookDao {
         //TODO: делать инсерт с возвратом id
         for (var genre : book.getGenres()) {
             var genreName = genre.getGenreName();
-            var genreFromDb = genreDao.getByName(genreName);
+            var genreFromDb = genreRepository.getByName(genreName);
             if (genreFromDb == null) {
-                genreDao.insert(Genre.builder().genreName(genreName).build());
-                genreFromDb = genreDao.getByName(genreName);
+                genreRepository.insert(Genre.builder().genreName(genreName).build());
+                genreFromDb = genreRepository.getByName(genreName);
             }
             jdbc.update("insert into book_genres (book_id, genre_id) values (:bookId, :genreId)",
                     Map.of("genreId", genreFromDb.getId(),

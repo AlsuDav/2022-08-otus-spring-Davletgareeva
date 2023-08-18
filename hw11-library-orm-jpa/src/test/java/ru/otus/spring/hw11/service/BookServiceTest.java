@@ -8,10 +8,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.otus.spring.hw11.dao.BookDao;
-import ru.otus.spring.hw11.domain.Author;
-import ru.otus.spring.hw11.domain.Book;
-import ru.otus.spring.hw11.domain.Genre;
+import ru.otus.spring.hw11.repositories.BookRepository;
+import ru.otus.spring.hw11.entity.Author;
+import ru.otus.spring.hw11.entity.Book;
+import ru.otus.spring.hw11.entity.Genre;
 import ru.otus.spring.hw11.exception.CannotInsertException;
 import ru.otus.spring.hw11.exception.CannotUpdateException;
 
@@ -28,7 +28,7 @@ class BookServiceTest {
     @InjectMocks
     private BookService bookService;
     @Mock
-    private BookDao bookDao;
+    private BookRepository bookRepository;
 
     private static final Long EXPECTED_BOOKS_COUNT = 1L;
     private static final Long NOT_EXISTING_BOOK_ID = 1000L;
@@ -76,52 +76,52 @@ class BookServiceTest {
     @BeforeEach
     void setUp() {
         Mockito.lenient()
-                .when(bookDao.count())
+                .when(bookRepository.count())
                 .thenReturn(EXPECTED_BOOKS_COUNT);
 
         Mockito.lenient()
                 .doThrow(new CannotInsertException(""))
-                .when(bookDao).insert(EXISTING_BOOK);
+                .when(bookRepository).insert(EXISTING_BOOK);
 
         Mockito.lenient()
                 .doNothing()
-                .when(bookDao).deleteById(NOT_EXISTING_BOOK_ID);
+                .when(bookRepository).deleteById(NOT_EXISTING_BOOK_ID);
 
         Mockito.lenient()
                 .doNothing()
-                .when(bookDao).insert(NOT_EXISTING_BOOK_1);
+                .when(bookRepository).insert(NOT_EXISTING_BOOK_1);
 
         Mockito.lenient()
                 .doNothing()
-                .when(bookDao).deleteById(EXISTING_BOOK.getId());
+                .when(bookRepository).deleteById(EXISTING_BOOK.getId());
 
         Mockito.lenient()
-                .when(bookDao.getById(EXISTING_BOOK_ID))
+                .when(bookRepository.getById(EXISTING_BOOK_ID))
                 .thenReturn(EXISTING_BOOK);
 
         Mockito.lenient()
-                .when(bookDao.getById(NOT_EXISTING_BOOK_ID))
+                .when(bookRepository.getById(NOT_EXISTING_BOOK_ID))
                 .thenReturn(null);
 
         Mockito.lenient()
-                .when(bookDao.getByName(EXISTING_BOOK.getBookName()))
+                .when(bookRepository.getByName(EXISTING_BOOK.getBookName()))
                 .thenReturn(EXISTING_BOOK);
 
         Mockito.lenient()
-                .when(bookDao.getByName(NOT_EXISTING_BOOK_1.getBookName()))
+                .when(bookRepository.getByName(NOT_EXISTING_BOOK_1.getBookName()))
                 .thenReturn(null);
 
         Mockito.lenient()
-                .when(bookDao.getByName(NOT_EXISTING_BOOK_2.getBookName()))
+                .when(bookRepository.getByName(NOT_EXISTING_BOOK_2.getBookName()))
                 .thenReturn(null);
 
         Mockito.lenient()
-                .when(bookDao.getAll())
+                .when(bookRepository.getAll())
                 .thenReturn(List.of(EXISTING_BOOK));
 
         Mockito.lenient()
                 .doNothing()
-                .when(bookDao).update(EXISTING_BOOK);
+                .when(bookRepository).update(EXISTING_BOOK);
     }
 
     @DisplayName("возвращать ожидаемое количество книг в БД")

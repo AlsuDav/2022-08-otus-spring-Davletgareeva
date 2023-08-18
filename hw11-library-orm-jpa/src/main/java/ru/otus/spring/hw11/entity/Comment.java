@@ -1,4 +1,4 @@
-package ru.otus.spring.hw11.domain;
+package ru.otus.spring.hw11.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

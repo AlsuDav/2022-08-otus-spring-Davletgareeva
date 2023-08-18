@@ -1,4 +1,4 @@
-package ru.otus.spring.hw11.dao.impl;
+package ru.otus.spring.hw11.repositories.impl;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.test.context.transaction.BeforeTransaction;
-import ru.otus.spring.hw11.dao.AuthorDao;
-import ru.otus.spring.hw11.domain.Author;
+import ru.otus.spring.hw11.repositories.AuthorRepository;
+import ru.otus.spring.hw11.entity.Author;
 import ru.otus.spring.hw11.exception.CannotInsertException;
 import ru.otus.spring.hw11.exception.CannotUpdateException;
 
@@ -19,8 +19,8 @@ import static org.assertj.core.api.Assertions.*;
 
 @DisplayName("Dao для работы с авторами книг (author) должно")
 @JdbcTest
-@Import(AuthorDaoJdbc.class)
-class AuthorDaoJdbcTest {
+@Import(AuthorRepositoryJpa.class)
+class AuthorRepositoryJpaTest {
 
     private static final int EXPECTED_AUTHORS_COUNT = 11;
     private static final long EXISTING_AUTHOR_ID = 1L;
@@ -28,7 +28,7 @@ class AuthorDaoJdbcTest {
     private static final String NOT_EXISTING_AUTHOR_NAME = "Antoine Marie Jean-Baptiste Roger vicomte de Saint-Exupéry";
 
     @Autowired
-    private AuthorDao authorDao;
+    private AuthorRepository authorDao;
 
     @BeforeTransaction
     void beforeTransaction() {

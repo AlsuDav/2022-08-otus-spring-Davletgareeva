@@ -8,8 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.otus.spring.hw11.dao.GenreDao;
-import ru.otus.spring.hw11.domain.Genre;
+import ru.otus.spring.hw11.repositories.GenreRepository;
+import ru.otus.spring.hw11.entity.Genre;
 import ru.otus.spring.hw11.exception.CannotUpdateException;
 
 import java.util.List;
@@ -23,7 +23,7 @@ class GenreServiceTest {
     @InjectMocks
     private GenreService genreService;
     @Mock
-    private GenreDao genreDao;
+    private GenreRepository genreRepository;
 
     private static final Long EXPECTED_GENRES_COUNT = 1L;
     private static final long EXISTING_GENRE_ID = 1L;
@@ -35,36 +35,36 @@ class GenreServiceTest {
     @BeforeEach
     void setUp() {
         Mockito.lenient()
-                .when(genreDao.count())
+                .when(genreRepository.count())
                 .thenReturn(EXPECTED_GENRES_COUNT);
 
         Mockito.lenient()
                 .doNothing()
-                .when(genreDao).insert(EXISTING_GENRE);
+                .when(genreRepository).insert(EXISTING_GENRE);
 
         Mockito.lenient()
                 .doNothing()
-                .when(genreDao).deleteById(EXISTING_GENRE_ID);
+                .when(genreRepository).deleteById(EXISTING_GENRE_ID);
 
         Mockito.lenient()
                 .doNothing()
-                .when(genreDao).insert(NOT_EXISTING_GENRE);
+                .when(genreRepository).insert(NOT_EXISTING_GENRE);
 
         Mockito.lenient()
-                .when(genreDao.getById(EXISTING_GENRE_ID))
+                .when(genreRepository.getById(EXISTING_GENRE_ID))
                 .thenReturn(EXISTING_GENRE);
 
         Mockito.lenient()
-                .when(genreDao.getByName(EXISTING_GENRE_NAME))
+                .when(genreRepository.getByName(EXISTING_GENRE_NAME))
                 .thenReturn(EXISTING_GENRE);
 
         Mockito.lenient()
-                .when(genreDao.getAll())
+                .when(genreRepository.getAll())
                 .thenReturn(List.of(EXISTING_GENRE));
 
         Mockito.lenient()
                 .doNothing()
-                .when(genreDao).update(EXISTING_GENRE);
+                .when(genreRepository).update(EXISTING_GENRE);
     }
 
     @DisplayName("возвращать ожидаемое количество жанров в БД")

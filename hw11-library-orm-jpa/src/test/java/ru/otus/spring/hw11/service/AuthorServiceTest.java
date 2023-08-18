@@ -8,8 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.otus.spring.hw11.dao.AuthorDao;
-import ru.otus.spring.hw11.domain.Author;
+import ru.otus.spring.hw11.repositories.AuthorRepository;
+import ru.otus.spring.hw11.entity.Author;
 import ru.otus.spring.hw11.exception.CannotUpdateException;
 
 import java.util.List;
@@ -23,7 +23,7 @@ class AuthorServiceTest {
     @InjectMocks
     private AuthorService authorService;
     @Mock
-    private AuthorDao authorDao;
+    private AuthorRepository authorDao;
 
     private static final Long EXPECTED_AUTHORS_COUNT = 1L;
     private static final Long EXISTING_AUTHOR_ID = 1L;

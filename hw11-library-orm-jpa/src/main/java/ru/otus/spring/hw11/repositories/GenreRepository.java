@@ -1,10 +1,10 @@
-package ru.otus.spring.hw11.dao;
+package ru.otus.spring.hw11.repositories;
 
-import ru.otus.spring.hw11.domain.Genre;
+import ru.otus.spring.hw11.entity.Genre;
 
 import java.util.List;
 
-public interface GenreDao {
+public interface GenreRepository {
 
     Long count();
 

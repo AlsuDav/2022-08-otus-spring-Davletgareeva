@@ -1,11 +1,11 @@
-package ru.otus.spring.hw11.dao.impl;
+package ru.otus.spring.hw11.repositories.impl;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
-import ru.otus.spring.hw11.dao.GenreDao;
-import ru.otus.spring.hw11.domain.Genre;
+import ru.otus.spring.hw11.repositories.GenreRepository;
+import ru.otus.spring.hw11.entity.Genre;
 import ru.otus.spring.hw11.exception.CannotInsertException;
 import ru.otus.spring.hw11.exception.CannotUpdateException;
 
@@ -16,10 +16,10 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class GenreDaoJdbc implements GenreDao {
+public class GenreRepositoryJpa implements GenreRepository {
     private final NamedParameterJdbcOperations jdbc;
 
-    public GenreDaoJdbc(NamedParameterJdbcOperations jdbc) {
+    public GenreRepositoryJpa(NamedParameterJdbcOperations jdbc) {
         this.jdbc = jdbc;
     }
 
